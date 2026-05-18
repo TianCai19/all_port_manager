@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0c0b" />
+    <meta name="description" content="Local Port Manager：本地 localhost 服务注册表、端口分配和导航页。" />
+    <title>Port · Local Port Manager</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="search" href="/opensearch.xml" type="application/opensearchdescription+xml" title="Port Manager" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">localhost command deck</p>
+          <h1>Local Port Manager</h1>
+          <p class="hero-copy">把散落的本地项目、端口、路径和入口统一收进一个注册表。部署前查端口，部署后做导航。</p>
+        </div>
+        <div class="hero-panel" aria-label="统计信息">
+          <span class="signal"></span>
+          <strong id="totalCount">0</strong>
+          <small>registered apps</small>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="工具栏">
+        <label class="search-box">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="名称 / 路径 / 端口" />
+        </label>
+        <button id="refreshButton" class="ghost-button" type="button">刷新</button>
+        <button id="suggestButton" class="primary-button" type="button">推荐端口</button>
+      </section>
+
+      <section class="composer" aria-label="注册服务">
+        <div class="section-title">
+          <p>Register</p>
+          <h2>登记一个本地服务</h2>
+        </div>
+        <form id="serviceForm" class="form-grid">
+          <input name="name" placeholder="项目名，例如 llm-note" required />
+          <input name="port" type="number" min="1" max="65535" placeholder="端口，例如 3000" required />
+          <input name="path" placeholder="项目路径 /Users/..." />
+          <select name="status" aria-label="状态">
+            <option value="running">running</option>
+            <option value="reserved">reserved</option>
+            <option value="stopped">stopped</option>
+            <option value="unknown">unknown</option>
+          </select>
+          <input name="tags" placeholder="标签，逗号分隔，例如 react,demo" />
+          <input name="description" placeholder="备注" />
+          <button class="primary-button" type="submit">注册服务</button>
+        </form>
+        <p id="formMessage" class="message" role="status"></p>
+      </section>
+
+      <section class="board">
+        <div class="section-title">
+          <p>Registry</p>
+          <h2>本地应用导航</h2>
+        </div>
+        <div id="serviceGrid" class="service-grid" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <template id="serviceCardTemplate">
+      <article class="service-card">
+        <div class="card-topline">
+          <span class="status-dot"></span>
+          <span class="status-text"></span>
+          <button class="delete-button" type="button">删除</button>
+        </div>
+        <h3></h3>
+        <a class="url" target="_blank" rel="noreferrer"></a>
+        <p class="path"></p>
+        <p class="description"></p>
+        <div class="tags"></div>
+      </article>
+    </template>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

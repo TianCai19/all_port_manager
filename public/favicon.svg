@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Port Manager icon">
+  <defs>
+    <linearGradient id="g" x1="10" y1="6" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d8ff3d"/>
+      <stop offset="1" stop-color="#50f08a"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0a0c0b"/>
+  <path d="M13 17h38v30H13z" fill="#151914" stroke="url(#g)" stroke-width="3"/>
+  <path d="M21 27h22M21 37h14" stroke="url(#g)" stroke-width="4" stroke-linecap="square" filter="url(#glow)"/>
+  <circle cx="48" cy="47" r="6" fill="#ffb23e"/>
+</svg>

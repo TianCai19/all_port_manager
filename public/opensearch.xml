@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>Port</ShortName>
+  <Description>Search Local Port Manager services by name, path, tag, description, or port.</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="64" height="64" type="image/svg+xml">http://127.0.0.1:17321/favicon.svg</Image>
+  <Url type="text/html" method="get" template="http://127.0.0.1:17321/?q={searchTerms}" />
+  <Url type="application/json" method="get" template="http://127.0.0.1:17321/api/services?q={searchTerms}" />
+</OpenSearchDescription>

@@ -1,0 +1,41 @@
+{
+  "services": [
+    {
+      "id": "4d757ee4-8654-421f-9482-679419292d6f",
+      "name": "coco-config-ui",
+      "path": "/Users/bytedance/codes/fun/coco-config-ui",
+      "port": 8787,
+      "host": "127.0.0.1",
+      "protocol": "http",
+      "status": "running",
+      "tags": [
+        "frontend",
+        "react",
+        "vite",
+        "local"
+      ],
+      "description": "Coco / TraeCLI config UI",
+      "createdAt": "2026-05-18T03:07:17.108Z",
+      "updatedAt": "2026-05-18T03:07:17.108Z"
+    },
+    {
+      "id": "49d683cd-29f2-4672-90b1-2346ecc4153f",
+      "name": "learningBeyondGradients-note",
+      "path": "/Users/bytedance/codes/fun/learningBeyondGradients",
+      "port": 8123,
+      "host": "127.0.0.1",
+      "protocol": "http",
+      "status": "running",
+      "tags": [
+        "local",
+        "frontend",
+        "html-note",
+        "hl",
+        "gridworld"
+      ],
+      "description": "Learning Beyond Gradients 多层级 HTML 笔记与实验记录",
+      "createdAt": "2026-05-18T03:30:27.326Z",
+      "updatedAt": "2026-05-18T03:30:27.326Z"
+    }
+  ]
+}

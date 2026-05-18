@@ -1,0 +1,16 @@
+{
+  "name": "local-port-manager",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local service registry, port allocator and navigation dashboard for localhost projects.",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "check": "node --check src/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+
