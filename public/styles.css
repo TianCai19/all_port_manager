@@ -150,10 +150,20 @@ body::before {
   letter-spacing: 0.12em;
 }
 
+.kind-filter {
+  display: grid;
+  gap: 8px;
+  min-width: 120px;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
 input,
-select {
+select,
+textarea {
   width: 100%;
-  min-height: 44px;
   border: 1px solid rgba(240, 243, 223, 0.14);
   background: rgba(5, 6, 6, 0.72);
   color: var(--text);
@@ -162,8 +172,22 @@ select {
   outline: none;
 }
 
+input,
+select {
+  min-height: 44px;
+}
+
+textarea {
+  min-height: 86px;
+  padding: 12px;
+  resize: vertical;
+  font: inherit;
+  line-height: 1.5;
+}
+
 input:focus,
-select:focus { border-color: var(--acid); }
+select:focus,
+textarea:focus { border-color: var(--acid); }
 
 button {
   min-height: 44px;
@@ -207,9 +231,37 @@ button:hover { transform: translateY(-1px); }
   gap: 10px;
 }
 
-.form-grid input:nth-child(1),
-.form-grid input:nth-child(3),
-.form-grid input:nth-child(6) { grid-column: span 2; }
+.form-grid input:nth-child(2),
+.form-grid input:nth-child(4),
+.form-grid input:nth-child(7) { grid-column: span 2; }
+
+.form-grid textarea {
+  grid-column: span 5;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  grid-column: span 2;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border: 1px solid rgba(240, 243, 223, 0.14);
+  background: rgba(5, 6, 6, 0.72);
+  min-height: 44px;
+}
+
+.checkbox-label input {
+  width: auto;
+  min-height: auto;
+}
+
+.form-grid[data-kind="remote"] input[name="port"] {
+  opacity: 0.45;
+}
 
 .message {
   min-height: 20px;
@@ -248,6 +300,20 @@ button:hover { transform: translateY(-1px); }
   text-transform: uppercase;
 }
 
+.kind-badge {
+  padding: 2px 8px;
+  border: 1px solid rgba(240, 243, 223, 0.14);
+  color: var(--text);
+}
+
+.autostart-badge {
+  padding: 2px 8px;
+  border: 1px solid rgba(80, 240, 138, 0.4);
+  color: var(--ok);
+  font-size: 10px;
+  border-radius: 4px;
+}
+
 .status-dot {
   width: 8px;
   height: 8px;
@@ -258,6 +324,13 @@ button:hover { transform: translateY(-1px); }
 .service-card[data-status="running"] .status-dot { background: var(--ok); box-shadow: 0 0 16px var(--ok); }
 .service-card[data-status="reserved"] .status-dot { background: var(--amber); box-shadow: 0 0 16px var(--amber); }
 .service-card[data-status="stopped"] .status-dot { background: var(--danger); box-shadow: 0 0 16px var(--danger); }
+.service-card[data-kind="remote"] .kind-badge {
+  border-color: rgba(255, 178, 62, 0.28);
+  color: var(--amber);
+}
+.service-card[data-kind="remote"]::before {
+  border-color: rgba(255, 178, 62, 0.18);
+}
 
 .delete-button {
   margin-left: auto;
@@ -281,10 +354,63 @@ button:hover { transform: translateY(-1px); }
 }
 
 .path,
-.description {
+.description,
+.startup-command {
   color: var(--muted);
   word-break: break-all;
   line-height: 1.5;
+}
+
+.startup-command {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  opacity: 0.8;
+  margin: 4px 0 0;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.quick-actions button,
+.save-comment-button {
+  min-height: 34px;
+  padding: 0 10px;
+  color: var(--text);
+  background: rgba(240, 243, 223, 0.04);
+  border: 1px solid rgba(240, 243, 223, 0.14);
+  font-size: 12px;
+}
+
+.comment-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.comment-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.comment-form label span {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.comment-form textarea {
+  min-height: 74px;
+  background: rgba(5, 6, 6, 0.54);
+}
+
+.save-comment-button {
+  justify-self: start;
 }
 
 .tags {
@@ -315,4 +441,3 @@ button:hover { transform: translateY(-1px); }
   .form-grid { grid-template-columns: 1fr; }
   .form-grid input:nth-child(n) { grid-column: auto; }
 }
-

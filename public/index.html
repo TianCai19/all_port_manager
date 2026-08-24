@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0a0c0b" />
-    <meta name="description" content="Local Port Manager：本地 localhost 服务注册表、端口分配和导航页。" />
+    <meta name="description" content="Local Port Manager：本地 localhost 服务与远程站点注册表、端口分配和导航页。" />
     <title>Port · Local Port Manager</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -15,9 +15,9 @@
     <main class="shell">
       <section class="hero">
         <div>
-          <p class="eyebrow">localhost command deck</p>
+          <p class="eyebrow">service command deck</p>
           <h1>Local Port Manager</h1>
-          <p class="hero-copy">把散落的本地项目、端口、路径和入口统一收进一个注册表。部署前查端口，部署后做导航。</p>
+          <p class="hero-copy">把散落的本地项目、端口、远程站点和入口统一收进一个注册表。部署前查端口，发布后也能做统一导航。</p>
         </div>
         <div class="hero-panel" aria-label="统计信息">
           <span class="signal"></span>
@@ -29,7 +29,15 @@
       <section class="toolbar" aria-label="工具栏">
         <label class="search-box">
           <span>Search</span>
-          <input id="searchInput" type="search" placeholder="名称 / 路径 / 端口" />
+          <input id="searchInput" type="search" placeholder="名称 / 路径 / URL / 端口" />
+        </label>
+        <label class="kind-filter">
+          <span>Type</span>
+          <select id="kindFilter" aria-label="服务类型过滤">
+            <option value="">全部</option>
+            <option value="local">本地</option>
+            <option value="remote">远程</option>
+          </select>
         </label>
         <button id="refreshButton" class="ghost-button" type="button">刷新</button>
         <button id="suggestButton" class="primary-button" type="button">推荐端口</button>
@@ -38,12 +46,17 @@
       <section class="composer" aria-label="注册服务">
         <div class="section-title">
           <p>Register</p>
-          <h2>登记一个本地服务</h2>
+          <h2>登记服务或远程站点</h2>
         </div>
         <form id="serviceForm" class="form-grid">
+          <select name="kind" aria-label="服务类型">
+            <option value="local">本地服务</option>
+            <option value="remote">远程站点</option>
+          </select>
           <input name="name" placeholder="项目名，例如 llm-note" required />
           <input name="port" type="number" min="1" max="65535" placeholder="端口，例如 3000" required />
-          <input name="path" placeholder="项目路径 /Users/..." />
+          <input name="path" placeholder="项目路径 /Users/... 或 Vercel 项目地址" />
+          <input name="remoteUrl" type="url" placeholder="远程 URL，例如 https://demo.vercel.app" />
           <select name="status" aria-label="状态">
             <option value="running">running</option>
             <option value="reserved">reserved</option>
@@ -52,6 +65,12 @@
           </select>
           <input name="tags" placeholder="标签，逗号分隔，例如 react,demo" />
           <input name="description" placeholder="备注" />
+          <input name="startupCommand" placeholder="启动命令，例如 npm start 或 uv run litellm ..." />
+          <label class="checkbox-label">
+            <input type="checkbox" name="autostart" />
+            <span>开机自启 (macOS launchd)</span>
+          </label>
+          <textarea name="comment" placeholder="评论 / 改进想法，例如后续希望如何提升这个项目"></textarea>
           <button class="primary-button" type="submit">注册服务</button>
         </form>
         <p id="formMessage" class="message" role="status"></p>
@@ -60,7 +79,7 @@
       <section class="board">
         <div class="section-title">
           <p>Registry</p>
-          <h2>本地应用导航</h2>
+          <h2>服务与站点导航</h2>
         </div>
         <div id="serviceGrid" class="service-grid" aria-live="polite"></div>
       </section>
@@ -70,6 +89,8 @@
       <article class="service-card">
         <div class="card-topline">
           <span class="status-dot"></span>
+          <span class="kind-badge"></span>
+          <span class="autostart-badge" title="开机自启">auto</span>
           <span class="status-text"></span>
           <button class="delete-button" type="button">删除</button>
         </div>
@@ -77,6 +98,17 @@
         <a class="url" target="_blank" rel="noreferrer"></a>
         <p class="path"></p>
         <p class="description"></p>
+        <div class="quick-actions" aria-label="快速打开项目路径">
+          <button class="open-vscode-button" type="button">VS Code</button>
+          <button class="open-terminal-button" type="button">终端</button>
+        </div>
+        <form class="comment-form">
+          <label>
+            <span>评论 / 改进想法</span>
+            <textarea name="comment" placeholder="希望如何提升和改进这个项目"></textarea>
+          </label>
+          <button class="save-comment-button" type="submit">保存评论</button>
+        </form>
         <div class="tags"></div>
       </article>
     </template>

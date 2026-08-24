@@ -4,6 +4,7 @@ const form = document.querySelector('#serviceForm');
 const message = document.querySelector('#formMessage');
 const totalCount = document.querySelector('#totalCount');
 const searchInput = document.querySelector('#searchInput');
+const kindFilter = document.querySelector('#kindFilter');
 const refreshButton = document.querySelector('#refreshButton');
 const suggestButton = document.querySelector('#suggestButton');
 
@@ -44,12 +45,15 @@ function setMessage(text, type = 'info') {
 
 function render() {
   const query = searchInput.value.trim().toLowerCase();
+  const activeKind = kindFilter.value;
   syncQueryToAddressBar(searchInput.value.trim());
   const visible = services.filter((service) => {
-    return [service.name, service.path, service.description, service.url, String(service.port)]
+    const queryMatch = [service.name, service.path, service.description, service.comment, service.url, service.remoteUrl, String(service.port)]
       .join(' ')
       .toLowerCase()
       .includes(query);
+    const kindMatch = !activeKind || service.kind === activeKind;
+    return queryMatch && kindMatch;
   });
 
   totalCount.textContent = services.length;
@@ -66,13 +70,35 @@ function render() {
   for (const service of visible) {
     const node = template.content.firstElementChild.cloneNode(true);
     node.dataset.status = service.status;
-    node.querySelector('h3').textContent = `${service.name} :${service.port}`;
+    node.dataset.kind = service.kind;
+    node.querySelector('.kind-badge').textContent = service.kind === 'remote' ? 'remote' : 'local';
+    const autostartBadge = node.querySelector('.autostart-badge');
+    if (autostartBadge) {
+      autostartBadge.style.display = service.autostart ? 'inline' : 'none';
+    }
+    node.querySelector('h3').textContent = service.kind === 'remote'
+      ? service.name
+      : `${service.name} :${service.port}`;
     node.querySelector('.status-text').textContent = service.status;
     const url = node.querySelector('.url');
     url.textContent = service.url;
     url.href = service.url;
-    node.querySelector('.path').textContent = service.path || '未记录路径';
+    node.querySelector('.path').textContent = service.path || (service.kind === 'remote' ? '未记录来源链接' : '未记录路径');
     node.querySelector('.description').textContent = service.description || '';
+    if (service.startupCommand && !node.querySelector('.startup-command')) {
+      const startupLine = document.createElement('p');
+      startupLine.className = 'startup-command';
+      startupLine.textContent = `▶ ${service.startupCommand}`;
+      node.querySelector('.description').after(startupLine);
+    }
+    const commentForm = node.querySelector('.comment-form');
+    const commentInput = commentForm.elements.comment;
+    commentInput.value = service.comment || '';
+
+    const quickActions = node.querySelector('.quick-actions');
+    if (service.kind === 'remote' || !service.path) {
+      quickActions.hidden = true;
+    }
 
     const tags = node.querySelector('.tags');
     for (const tag of service.tags || []) {
@@ -88,6 +114,14 @@ function render() {
       setMessage(`已删除 ${service.name}`, 'info');
     });
 
+    node.querySelector('.open-vscode-button').addEventListener('click', () => openProjectPath(service, 'vscode'));
+    node.querySelector('.open-terminal-button').addEventListener('click', () => openProjectPath(service, 'terminal'));
+
+    commentForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      await saveComment(service, commentInput.value);
+    });
+
     serviceGrid.append(node);
   }
 }
@@ -98,17 +132,48 @@ async function loadServices() {
   render();
 }
 
+function syncFormMode() {
+  const kind = form.elements.kind.value;
+  const isRemote = kind === 'remote';
+  form.dataset.kind = kind;
+  form.elements.port.disabled = isRemote;
+  form.elements.port.required = !isRemote;
+  form.elements.remoteUrl.disabled = !isRemote;
+  form.elements.remoteUrl.required = isRemote;
+  suggestButton.disabled = isRemote;
+
+  if (isRemote) {
+    form.elements.port.value = '';
+    form.elements.path.placeholder = '来源路径 / 控制台地址，例如 https://vercel.com/...';
+    form.elements.description.placeholder = '备注，例如 production deployment';
+  } else {
+    form.elements.remoteUrl.value = '';
+    form.elements.path.placeholder = '项目路径 /Users/...';
+    form.elements.description.placeholder = '备注';
+  }
+}
+
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const data = new FormData(form);
+  const kind = data.get('kind');
   const service = {
+    kind,
     name: data.get('name'),
-    port: Number(data.get('port')),
     path: data.get('path'),
     status: data.get('status'),
+    startupCommand: data.get('startupCommand'),
+    autostart: data.get('autostart') === 'on',
     tags: String(data.get('tags') || '').split(',').map((tag) => tag.trim()).filter(Boolean),
-    description: data.get('description')
+    description: data.get('description'),
+    comment: data.get('comment')
   };
+
+  if (kind === 'remote') {
+    service.remoteUrl = data.get('remoteUrl');
+  } else {
+    service.port = Number(data.get('port'));
+  }
 
   try {
     const payload = await api('/api/services', {
@@ -125,6 +190,33 @@ form.addEventListener('submit', async (event) => {
   }
 });
 
+async function openProjectPath(service, target) {
+  try {
+    await api(`/api/services/${encodeURIComponent(service.id)}/open`, {
+      method: 'POST',
+      body: JSON.stringify({ target })
+    });
+    setMessage(`已用 ${target === 'vscode' ? 'VS Code' : '终端'} 打开 ${service.name}`, 'success');
+  } catch (error) {
+    setMessage(`${service.name} 打开失败：${error.message}`, 'error');
+  }
+}
+
+async function saveComment(service, comment) {
+  try {
+    const payload = await api(`/api/services/${encodeURIComponent(service.id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ comment })
+    });
+    const index = services.findIndex((item) => item.id === payload.service.id);
+    if (index !== -1) services[index] = payload.service;
+    render();
+    setMessage(`已保存 ${service.name} 的评论`, 'success');
+  } catch (error) {
+    setMessage(`${service.name} 评论保存失败：${error.message}`, 'error');
+  }
+}
+
 suggestButton.addEventListener('click', async () => {
   const payload = await api('/api/ports/suggest?start=3000&end=9999&count=1');
   const port = payload.suggestions[0];
@@ -138,6 +230,9 @@ suggestButton.addEventListener('click', async () => {
 
 refreshButton.addEventListener('click', loadServices);
 searchInput.addEventListener('input', render);
+kindFilter.addEventListener('change', render);
+form.elements.kind.addEventListener('change', syncFormMode);
 
 searchInput.value = getInitialQuery();
+syncFormMode();
 loadServices().catch((error) => setMessage(error.message, 'error'));

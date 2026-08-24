@@ -83,9 +83,21 @@ curl -X POST "http://127.0.0.1:17321/api/services" \
 ## 本地启动
 
 ```bash
+# 首次运行前，用示例文件初始化本地注册表（真实数据不入库）
+cp data/registry.example.json data/registry.json
+
 npm install
 npm start
 ```
 
 默认监听：`http://127.0.0.1:17321`
+
+> `data/registry.json` 是本地运行时数据（含绝对路径、端口，可能含密钥），已在
+> `.gitignore` 中忽略，不会提交。仓库只跟踪脱敏模板 `data/registry.example.json`；
+> 若未手动拷贝，服务首次启动也会自动生成一个空的 `{"services": []}`。
+
+## 许可
+
+[MIT](./LICENSE)
+
 

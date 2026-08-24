@@ -4,6 +4,20 @@
   "private": true,
   "description": "Local service registry, port allocator and navigation dashboard for localhost projects.",
   "type": "module",
+  "keywords": [
+    "localhost",
+    "port-manager",
+    "service-registry",
+    "launchd",
+    "dashboard",
+    "agent"
+  ],
+  "license": "MIT",
+  "author": "TianCai19",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TianCai19/all_port_manager.git"
+  },
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",

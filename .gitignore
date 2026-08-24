@@ -2,3 +2,7 @@ node_modules/
 .DS_Store
 *.log
 
+# Runtime registry data (contains local absolute paths, ports, and secrets).
+# Use data/registry.example.json as a template; the real file is created on first run.
+data/registry.json
+

@@ -1,0 +1,68 @@
+{
+  "services": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "kind": "local",
+      "name": "example-web-app",
+      "path": "/Users/me/codes/example-web-app",
+      "status": "running",
+      "autostart": true,
+      "startupCommand": "npm --prefix /Users/me/codes/example-web-app run dev -- --host 127.0.0.1 --port 3000",
+      "tags": [
+        "frontend",
+        "vite",
+        "local"
+      ],
+      "description": "Example local frontend app",
+      "comment": "",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "port": 3000,
+      "host": "127.0.0.1",
+      "protocol": "http",
+      "remoteUrl": ""
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000002",
+      "kind": "local",
+      "name": "example-static-note",
+      "path": "/Users/me/codes/example-note",
+      "status": "running",
+      "autostart": true,
+      "startupCommand": "python3 -m http.server 8123 --bind 127.0.0.1 --directory /Users/me/codes/example-note",
+      "tags": [
+        "local",
+        "html-note"
+      ],
+      "description": "Example static HTML note served locally",
+      "comment": "",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "port": 8123,
+      "host": "127.0.0.1",
+      "protocol": "http",
+      "remoteUrl": ""
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000003",
+      "kind": "remote",
+      "name": "example-remote-dashboard",
+      "path": "",
+      "status": "running",
+      "autostart": false,
+      "startupCommand": "",
+      "tags": [
+        "remote",
+        "frontend"
+      ],
+      "description": "Example remote deployment entry",
+      "comment": "",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z",
+      "host": "example.com",
+      "port": 443,
+      "protocol": "https",
+      "remoteUrl": "https://example.com/"
+    }
+  ]
+}
