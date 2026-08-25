@@ -2,6 +2,12 @@
 
 Local Port Manager 是一个本地服务注册表 + 端口分配中心 + 可视化导航页。它解决多项目本地部署时端口冲突、项目入口分散、Agent/Skill 无法统一查询当前端口占用的问题。
 
+## 预览
+
+![Local Port Manager 导航页](./docs/demo.png)
+
+> 上图为使用脱敏示例数据（`data/registry.example.json`）运行的导航页效果。
+
 ## 目标
 
 - **防冲突**：部署前先通过 API 查询端口是否已被注册或系统监听占用。
