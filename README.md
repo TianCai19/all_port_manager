@@ -136,6 +136,66 @@ curl -X POST "http://127.0.0.1:17321/api/services" \
 
 配套的 agent 操作规范见 [`SKILL.md`](./SKILL.md)。
 
+## 作为 Skill 安装（给 Agent 使用）
+
+这个工具的核心用户其实是 **AI code agent**：它跑起一个本地服务后，应该主动把服务登记进来、必要时开启自启动。为此仓库自带一份 [`SKILL.md`](./SKILL.md)，描述了 agent 该如何健康检查、推荐端口、注册服务、写 launchd 自启动并验证真实可用。
+
+把 `SKILL.md` 安装到你的 agent 技能目录，agent 之后就能在合适的时机自动调用 Local Port Manager。
+
+### 安装方式
+
+**方式 A：TraeCode / Claude Code 等「技能目录」型 agent**
+
+技能通常放在一个约定目录下，每个技能一个子文件夹，入口是 `SKILL.md`。手动安装：
+
+```bash
+# TraeCode（默认 ~/.trae/skills），Claude Code 用 ~/.claude/skills，按你的 agent 调整
+SKILL_DIR="$HOME/.trae/skills/local-port-manager"
+mkdir -p "$SKILL_DIR"
+curl -fsSL https://raw.githubusercontent.com/TianCai19/all_port_manager/main/SKILL.md \
+  -o "$SKILL_DIR/SKILL.md"
+```
+
+如果你的 agent 带 skill-installer，也可以直接从 GitHub 装：
+
+```bash
+# 例：TraeCode skill-installer
+scripts/install-skill-from-github.py --repo TianCai19/all_port_manager --path SKILL.md --name local-port-manager
+```
+
+安装后**重启 agent** 以加载新技能。
+
+> 注意：`SKILL.md` 里用 `<REPO_DIR>` 表示本仓库 clone 后的绝对路径。安装后请把它替换成你机器上的真实路径（例如 `~/codes/all_port_manager`），并确保 Manager 已在 `http://127.0.0.1:17321` 运行。
+
+**方式 B：不支持技能系统的 agent（直接喂提示词）**
+
+把下面这段作为 system / 项目级提示词贴给 agent 即可，让它把 Local Port Manager 当成本地服务的登记中心。
+
+### 给 Agent 的提示词模板
+
+```text
+你可以使用本机的 Local Port Manager（本地服务注册表 + 端口分配 + 导航页），
+Base URL: http://127.0.0.1:17321。请遵守以下约定：
+
+1. 每次要用之前先健康检查：GET /api/health；连不上就先启动
+   `npm --prefix <REPO_DIR> start` 再重试。
+2. 部署任何本地服务前，先用 GET /api/ports/suggest?start=3000&end=9999 拿一个空端口，
+   或用 GET /api/ports/check?port=<port> 确认端口没被注册/监听占用。
+3. 服务跑起来后，必须调用 POST /api/services 登记：至少提供
+   name、path（绝对路径）、port、startupCommand；需要开机自启就加 "autostart": true。
+4. 更新用 PATCH /api/services/:id，下线用 DELETE /api/services/:id（会自动卸载 launchd plist）。
+5. 写入后要验证真实可用：lsof 确认端口在监听、curl 返回 2xx；涉及页面就用浏览器实测。
+6. 不要凭记忆猜端口/路径，一律以 GET /api/services 的返回为准。
+```
+
+一句话触发示例（对已装 skill 的 agent）：
+
+> “用 local-port-manager 技能，帮我把刚在 `~/codes/foo` 起的服务登记进去，端口你先查一个空的，并开启开机自启。”
+
+> “打开 Local Port Manager，列一下我本地现在注册了哪些服务、分别占哪个端口。”
+
+配套的 agent 操作规范细节见 [`SKILL.md`](./SKILL.md)。
+
 ## 项目结构
 
 ```text
