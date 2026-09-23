@@ -18,6 +18,9 @@ const DEFAULT_PORT_START = 3000;
 const DEFAULT_PORT_END = 9999;
 const LAUNCH_AGENT_DIR = path.join(os.homedir(), 'Library', 'LaunchAgents');
 const NODE_BIN_DIR = path.dirname(process.execPath);
+// launchd label prefix for autostart plists. Neutral by default; override with
+// LPM_LABEL_PREFIX (e.g. "com.yourname.lpm.") to namespace plists per machine.
+const LABEL_PREFIX = (process.env.LPM_LABEL_PREFIX || 'local.lpm.').replace(/\.?$/, '.');
 const DEFAULT_LAUNCHD_PATH = [
   NODE_BIN_DIR,
   '/usr/local/bin',
@@ -407,7 +410,7 @@ async function openServiceProject(service, target) {
 
 function getLaunchdPlistPath(service) {
   const safeLabel = service.name.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase().replace(/-+/g, '-').replace(/^-|-$/g, '');
-  const label = `com.bytedance.lpm.${safeLabel}-${service.id.slice(0, 8)}`;
+  const label = `${LABEL_PREFIX}${safeLabel}-${service.id.slice(0, 8)}`;
   return {
     label,
     plistPath: path.join(LAUNCH_AGENT_DIR, `${label}.plist`)
@@ -592,7 +595,7 @@ async function handleApi(req, res, url) {
   }
 
   if (url.pathname === '/api/health' && req.method === 'GET') {
-    sendJson(res, 200, { ok: true, name: 'Local Port Manager', port: PORT, dataFile: DATA_FILE });
+    sendJson(res, 200, { ok: true, name: 'Local Port Manager', port: PORT, dataFile: DATA_FILE, labelPrefix: LABEL_PREFIX });
     return;
   }
 
